@@ -3,7 +3,13 @@
 <div class="row justify-content-center">
   <div class="col-md-6">
     
-    
+    <% if (hasMessage) { %>
+      <% for( let j in messages ) { %>
+        <!-- <div class="alert alert-warning"> -->
+          <%- message[j] %>
+        <!-- </div> -->
+      <% } %>
+    <% } %>
     <table class="table">
       <thead>
         <tr>
@@ -13,21 +19,21 @@
         </tr>
       </thead>
       <tbody>
-        
+        <% for(let i in content) { %>
           <tr>
-            <td class="align-middle">心得</td>
-            <td><input type="text" class="form-control form-control-sm" value="mind"></td>
+            <td class="align-middle"><%= content[i].name %></td>
+            <td><input type="text" class="form-control form-control-sm" value="<%= content[i].path %>"></td>
             <td class="align-middle">
-              <form method="POST">
+              <form action="/dashboard/categories/del/<%= i %>" method="POST">
                 <button type="submit" class="btn btn-outline-danger btn-sm">刪除</button>
               </form>
             </td>
           </tr>
-        
+        <% } %>  
       </tbody>
     </table>
 
-    <form method="POST">
+    <form action="/dashboard/categories/creat" method="POST">
       <table class="table">
         <tr>
           <td class="align-middle">新增</td>
