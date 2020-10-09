@@ -1,0 +1,17 @@
+<% extend('../layout/dashboard-layout') %> 
+
+<h1>所有文章</h1>
+
+<% for( let i in article ) { %>
+    <form action="/dashboard/article/edit/:<%= i %> " method="POST">
+        <input type="submit" value="編輯" name="edit">
+        <%= article[i].title %>
+    </form>
+    
+    <!-- <p><%= article[i].content %></p>
+    <p>分類: <span><%= article[i].status %> </span></p>
+    <p>分類id: <span><%= article[i].category %> </span></p>
+    <p>id: <span><%= article[i].id %> </span></p>
+    <i>時間: <span><%= article[i].updateTime %> </span></i> -->
+    <hr/>
+<% } %>
