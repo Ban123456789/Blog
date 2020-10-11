@@ -8,22 +8,24 @@
       <a href="article.html" class="btn btn-primary">新增文章</a>
     </div>
 
-    
+    <% for( let i in articleArr ) { %>
       <div class="card my-3">
         <h4 class="card-header">
-          補充課程：Sass 與 includePaths
+          <%= articleArr[i].title %> 
         </h4>
         <div class="card-body">
-          [程式][PHP] HTML 表單(Form)以陣列(Array)方式傳遞&lt;input&nbsp;type=&#39;text&#39;&gt;資訊。 什麼時候會用到這樣的方法，我無法明確表達，可能要靠你自己想像。 我遇到的狀況是要讓user不斷的新增商品與價格。 第一種做法：&nbsp;.....
+          <%- stringTags(articleArr[i].content).slice(0,100) %> ...
           <div>
             <span class="fa fa-clock-o"></span> 
-            2018/01/04
+            <%= moment(articleArr[i].updateTime * 1000).format('YYYY/MM/DD') %> 
             ,
             <span class="fa fa-folder-open-o"></span>
             <span>
-              
-                沒有分類
-              
+              <% for( let j in categoriesObj ) { %>
+                <% if (j === articleArr[i].category) { %>
+                  <%= categoriesObj[j].name %>  
+                <% } %>
+              <% } %>
             </span>
           </div>
         </div>
@@ -35,6 +37,8 @@
           
         </div>
       </div>
+    <% } %>
+      
   </div>
 </div>
 

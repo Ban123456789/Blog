@@ -2,13 +2,38 @@ var express = require('express');
 const { route } = require('.');
 var router = express.Router();
 var firebaseDb = require('../connection/firebase_admin');
+var moment = require('moment'); // 將時間戳記轉成正常時間格式
+var stringTags = require('striptags'); // 將前端內容多餘的字隱藏起來
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
+
+// todo 文章總覽區
 router.get('/archives', function(req, res, next) {
-    res.render('dashboard/archives', { title: 'Express' });
+    let articleArr = [];
+    let categoriesObj = {};
+    // * 使用 firebase 的 foreach 將物件一個一個得單獨取出來，放進陣列
+        firebaseDb.ref('/articles/').orderByChild('updateTime').once('value', function(articlesData){
+            articlesData.forEach( data => {
+                // console.log(data.val());
+                articleArr.push(data.val());
+            });
+            articleArr.reverse();
+            // console.log(articleArr);
+        }).then( success => {
+            return firebaseDb.ref('/categories/').once('value');
+        }).then( categoriesData => {
+            // console.log(categoriesData.val());
+            categoriesObj = categoriesData.val();
+            res.render('dashboard/archives', {
+                articleArr,
+                moment,
+                stringTags,
+                categoriesObj
+            });
+        });
   });
 
 // todo 文章編輯
@@ -65,13 +90,36 @@ router.get('/article/:id', function(req, res) {
     let name = {};
         firebaseDb.ref('/categories/').once('value',function(categoriesData){
             name = categoriesData.val();
-            console.log(id);
-            return firebaseDb.ref('/articles/').child(id).once('value');
+            // console.log(name);
+        }).then(function(categoriesData){ // 上面成功做完 once 的動作之後
+            // console.log(categoriesData.val());
+            return firebaseDb.ref('/articles/').child(id).once('value'); // 在回傳下一個 then 要做的事
         }).then(function(articleData){
-            console.log(articleData.val());
-            res.render('dashboard/article', {
-                name,
-            });
+            const article = articleData.val()
+                // console.log(article);
+                console.log('開始編輯文章!');
+                res.render('dashboard/article', {
+                    name,
+                    article
+                }); 
+        });
+});
+// * 修改完文章上傳
+router.post('/article/creat/:id', function(req, res){
+    const id = req.params.id.replace(':','');
+        // console.log(id);
+    let updateTime = Math.floor(Date.now()/1000);
+    const article = {
+        title: req.body.title,
+        content: req.body.content,
+        category: req.body.category,
+        status: req.body.status,
+        id: id,
+        updateTime: updateTime
+    };
+        firebaseDb.ref('/articles/').child(id).update(article).then( success => {
+            console.log('修改文章成功!');
+            res.redirect('/dashboard/article/result');
         });
 });
 
