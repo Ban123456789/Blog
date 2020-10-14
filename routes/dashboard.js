@@ -11,14 +11,18 @@ router.get('/', function(req, res, next) {
 });
 
 // todo 文章總覽區
+// * 取得所有文章
 router.get('/archives', function(req, res, next) {
+    const status = req.query.status || 'public';
     let articleArr = [];
     let categoriesObj = {};
     // * 使用 firebase 的 foreach 將物件一個一個得單獨取出來，放進陣列
         firebaseDb.ref('/articles/').orderByChild('updateTime').once('value', function(articlesData){
             articlesData.forEach( data => {
                 // console.log(data.val());
-                articleArr.push(data.val());
+                if(status === data.val().status){
+                    articleArr.push(data.val());
+                }
             });
             articleArr.reverse();
             // console.log(articleArr);
@@ -31,10 +35,20 @@ router.get('/archives', function(req, res, next) {
                 articleArr,
                 moment,
                 stringTags,
-                categoriesObj
+                categoriesObj,
+                status
             });
         });
   });
+// * 刪除文章
+router.post('/archives/del/:id', function(req, res){
+    const id = req.params.id.replace(':',''); // 取參數(冒號後面)
+        // console.log(id);
+        firebaseDb.ref('/articles/').child(id).remove();
+        req.flash('info', '欄位刪除成功!');
+        res.send('文章刪除成功!');
+        // res.redirect('/dashboard/categories');
+});
 
 // todo 文章編輯
 // * 原本空的文章編輯區
@@ -122,15 +136,6 @@ router.post('/article/creat/:id', function(req, res){
             res.redirect('/dashboard/article/result');
         });
 });
-
-// firebaseDb.ref('articles').child(id).once('value',function(data){
-//     console.log(data.val());
-//     res.render('dashboard/article', {
-//         name,
-//     });
-// });
-
-
 
 // todo 文章分類
 router.get('/categories', function(req, res, next) {

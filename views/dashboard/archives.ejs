@@ -3,8 +3,12 @@
 <div class="row justify-content-center">
   <div class="col-md-6">
     <div class="btn-group w-100">
-      <a href="#" class="btn btn-outline-secondary w-100 rounded-0 active">已發佈</a>
-      <a href="#" class="btn btn-outline-secondary w-100 rounded-0 ">草稿</a>
+      <a href="/dashboard/archives?status=public"
+        class="btn btn-outline-secondary w-100 rounded-0 <% if(status === 'public') { %> active <% } %> "
+       >已發佈</a>
+      <a href="/dashboard/archives?status=draft" 
+        class="btn btn-outline-secondary w-100 rounded-0 <% if(status === 'draft') { %> active <% } %>"
+      >草稿</a>
       <a href="article.html" class="btn btn-primary">新增文章</a>
     </div>
 
@@ -30,7 +34,13 @@
           </div>
         </div>
         <div class="card-footer p-0 btn-group">
-          <a href="#" class="btn btn-outline-danger rounded-0 deletePost" data-id="-L1zrsyiWCAbMQ5x8Plk" data-title="補充課程：Sass 與 includePaths">刪除</a>
+          <a href="#" class="btn btn-outline-danger rounded-0 deletePost"
+            data-id="<%= articleArr[i].id %> " 
+            data-title="<%= articleArr[i].title %>"
+            id="del"
+          >
+            刪除
+          </a>
           <a href="#" class="btn btn-outline-secondary w-100 rounded-0">編輯</a>
           
           <a href="#" target="_blank" class="btn btn-outline-secondary w-100 rounded-0">預覽</a>
@@ -66,3 +76,27 @@
     </li>
   </ul>
 </nav>
+
+<script>
+$(document).ready(function () {
+  $('.deletePost').click(function (e) { 
+    e.preventDefault();
+    const id = $(this).data('id');
+    const title = $(this).data('title');
+      console.log(id,title);
+      // confirm() 是 JS 內建的方法
+      if(confirm('確定是否刪除: '+title)){
+        // console.log('刪除成功!');
+        $.ajax({
+          type: 'POST',
+          url: '/dashboard/archives/del/:' + id,
+        }).done(function(success){
+          console.log(success);
+          window.location = '/dashboard/archives/'
+        });
+      };
+  });
+});
+</script>
+
+<!-- /dashboard/archives/del/: articleArr[i].id  -->
