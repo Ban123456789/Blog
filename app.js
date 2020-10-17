@@ -9,6 +9,7 @@ var flash = require('connect-flash');
 
 var indexRouter = require('./routes/index');
 var dashboardRouter = require('./routes/dashboard');
+var authRouter = require('./routes/auth');
 
 var app = express();
 
@@ -22,6 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 var session = require('express-session');
+const { auth } = require('firebase');
 app.engine('ejs', require('express-ejs-extend'));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,6 +43,7 @@ app.use(flash());
 
 app.use('/', indexRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
