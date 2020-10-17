@@ -34,15 +34,24 @@ app.use(session({
   secret: 'keyboard cat',
   resave: true,
   saveUninitialized: true,
-  // cookie: { 
-  //   secure: true,
-  //   maxAge: 100*1000 
-  // }
+  duration: 10*1000,
+  cookie: { 
+    secure: false,
+    // maxAge: 10*1000 // 設定5分鐘沒有動作就登出
+  }
 }));
 app.use(flash());
 
+const authCheck = function(req, res, next){
+  console.log(req.session);
+    if(req.session.uid){
+      return next();
+    }
+    return res.redirect('/auth/signin');
+};
+
 app.use('/', indexRouter);
-app.use('/dashboard', dashboardRouter);
+app.use('/dashboard', authCheck, dashboardRouter);
 app.use('/auth', authRouter);
 
 // catch 404 and forward to error handler

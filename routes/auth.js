@@ -5,7 +5,7 @@ var firebase = require('../connection/firebase');
 // todo 註冊帳號
 router.get('/signup/', function(req, res){
     const message = req.flash('message');
-        console.log(message);
+        // console.log(message);
         res.render('dashboard/signup',{
             message
         });
@@ -38,17 +38,31 @@ router.post('/signup/creat', function(req, res){
 
 // todo 登入帳號
 router.get('/signin', function(req, res){
-    res.render('dashboard/signin');
+    const error = req.flash('message');
+    res.render('dashboard/signin', {
+        error
+    });
 });
 router.post('/signin/success', function(req, res){
     const email = req.body.email;
     const password = req.body.password;
         firebase.auth().signInWithEmailAndPassword(email, password).then( success => {
-            console.log(success.user.uid);
+            // console.log(success.user.uid);
+            if(success.user.uid){
+                req.session.uid = success.user.uid;
+                res.redirect('/dashboard/archives');
+            };
         }).catch( fail => {
-            console.log(fail);
+            // console.log(fail);
+            let errorMessage = '';
+                if(fail.code === 'auth/wrong-password'){
+                    errorMessage = '密碼輸入錯誤!';
+                }else if(fail.code === 'auth/user-not-found'){
+                    errorMessage = '此帳號尚未註冊或是輸入錯誤!'
+                };
+                req.flash('message', errorMessage);
+                res.redirect('/auth/signin');
         });
-    // res.redirect('/dashboard/archives');
 });
 
 module.exports = router;
