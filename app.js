@@ -32,12 +32,12 @@ app.use(bodyParser.json());
 // todo flash 倚靠 session 生存，所以放在他後面
 app.use(session({
   secret: 'keyboard cat',
-  resave: true,
-  saveUninitialized: true,
+  resave: false,
+  saveUninitialized: false,
   duration: 10*1000,
   cookie: { 
     secure: false,
-    // maxAge: 10*1000 // 設定5分鐘沒有動作就登出
+    // maxAge: 10*1000
   }
 }));
 app.use(flash());

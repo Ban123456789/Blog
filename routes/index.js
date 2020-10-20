@@ -60,9 +60,37 @@ router.get('/', function(req, res, next) {
     });
 });
 
+// todo 前端點進去文章查看詳細內容
 router.get('/post', function(req, res, next) {
-  res.render('post', { title: 'Express' });
-});
+  let newData = {};
+  let objData = {};
+  let newCategory = {};
+  let objCategory = {};
+    firebaseDb.ref('/articles/').once('value').then( items => {
+      objData = items.val();
+      for(let i in objData){
+        if(i === req.query.id){
+          newData = objData[i];
+        }
+      };
+      return firebaseDb.ref('/categories/').once('value');
+    }).then( category => {
+      objCategory = category.val();
+      for(let i in objCategory){
+        if(i === newData.category){
+          newCategory = objCategory[i];
+        };
+      };
+      // console.log(newCategory);
+
+      res.render('post', {
+        newData,
+        newCategory,
+        moment
+      });
+    });
+  });
+
 router.get('/dashboard/signup', function(req, res, next) {
   res.render('dashboard/signup', { title: 'Express' });
 });

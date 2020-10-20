@@ -6,7 +6,7 @@
   <% for( let i in newData ) { %>
     <div class="card mb-3">
       <div class="card-body">
-        <a href="/post.html"> <h2 class="text-primary"><%= newData[i].title %></h2></a>
+        <a href="/post/?id=<%= newData[i].id %>"> <h2 class="text-primary"><%= newData[i].title %></h2></a>
         <div class="d-flex flex-row text-secondary small">
           <div class="p-2"><span class="fa fa-clock-o"></span>
             <%= moment(newData[i].updateTime * 1000).format('YYYY/MM/DD') %> 
@@ -20,6 +20,10 @@
               </div>
             <% } %>
           <% } %>
+          <div class="p-2">
+            <script id="dsq-count-scr" src="//bu-luo-ge-liu-yan-ban.disqus.com/count.js" async></script>
+            <a href="/post/?id=<%= newData[i].id %>#disqus_thread">Link</a>
+          </div>
         </div>
         <div>
           <%- stringTag(newData[i].content).slice(0,150) %> ...
